@@ -1,0 +1,93 @@
+# removing docker containers; images
+docker rm $(docker ps -a -q)
+docker rmi $(docker images -q)
+
+# docker tag a tag as latest
+docker tag docker.foobar.com/epeters/hello:0.1.0 docker.foobar.com/epeters/hello:latest
+
+# run docker container, but have it cleanup when it exits - great for developing
+# docker images themselves
+docker run --rm [image_name]
+
+# installing requirements from file list, good for when installing additional
+# TESTING requirements
+pip install -r integration-tests/runtime-helpers-builder/testing-requirements.txt
+
+# loop through directories and get git status; pull; prune local branches (according to remote)
+for d in `ls -d */`; do echo "DIRECTORY: $d"; cd $d; git status; cd ..; done
+for d in `ls -d */`; do echo "DIRECTORY: $d"; cd $d; git pull origin master; cd ..; done
+for d in `ls -d */`; do echo "DIRECTORY: $d"; cd $d; git remote prune origin; cd ..; done
+
+# install python package in local directory, but reference code files directly
+# so the installed package moves with code changes
+pip install -e .
+
+# installing powerline
+#### VERIFY THIS!!!! FROM A WORKING INSTALLATION #####
+sudo pip install --user git+git://github.com/Lokaltog/powerline
+git clone http://github.com/Lokaltog/powerline
+wget https://github.com/Lokaltog/powerline/raw/develop/font/PowerlineSymbols.otf https://github.com/Lokaltog/powerline/raw/develop/font/10-powerline-symbols.conf
+mkdir -p ~/.fonts/ && mv PowerlineSymbols.otf ~/.fonts/
+fc-cache -vf ~/.fonts
+mkdir -p ~/.config/fontconfig/conf.d/ && mv 10-powerline-symbols.conf ~/.config/fontconfig/conf.d/
+vi .bashrc
+
+# computer info
+cat /proc/cpuinfo
+cat /proc/meminfo
+cat /proc/self/status
+
+# force remove a branch
+git branch -D [branch_name]
+
+# clone with recursive clone of submodules
+git clone --recursive [url]
+
+# get the most recent ANNOTATED tag name
+git describe
+
+# searching the git log
+git log --color --name-status --pretty=medium --author="Edward Petersen" --graph --since="1 month 20 days ago"
+
+# remove file staged for commit
+git rm --cached [file]
+
+# remove a known host
+ssh-keygen -f "/home/epeters/.ssh/known_hosts" -R gocd-controller-agent01
+
+# update the editor
+update-alternatives --config editor
+
+# docker build
+#### FLESH THIS OUT #####
+docker build -t docker.foobar.com/epeters/hello .
+docker build --force-rm=true -t docker.foobar.com/epeters/hello:1.0.0 .
+
+# export container as a tarballed filesystem
+docker export [container_hash] > [tarball_name.tar]
+
+# docker save
+#### VERIFY THIS!!!! ###
+docker save docker.foobar.com/epeters/hello:1.0.0 >> filename.bin
+
+# number expansion on the command line
+for i in {193..196}; do echo "10.130.0.${i}"; done
+
+# creating an annotated tag in git
+git tag -f -a 3.5.0 -m "Initial Sprint Tag"
+
+# using sed in GoCD to add the pipeline count as the "update" portion of the
+# version number as given by git describe
+GO_PIPELINE_COUNTER=103 && echo `git describe | sed 's/\([0-9]*\.[0-9]*\.\).*/\1'$GO_PIPELINE_COUNTER'/'`
+
+# When using the Maven "Versions" add-on, dynamically replacing the version in a pom file
+mvn versions:set -DnewVersion=3.5.100
+
+# removing a line from the the requirements file (python)
+sed -i '/^MYPACKAGENAME/d' requirements.txt
+
+# adding the version number dynamically to the requriements file in GoCD (python)
+VERSION=`cat awesome_dependency/VERSION` && echo -e "\nawesome_dependency==$VERSION" >> requirements.txt
+
+# adding the version number dynamically to the version.py file (before building and testing)
+VERSION=`cat VERSION` && echo -e "__version__ = '$VERSION'\n" > src/tool_pkg_directory/version.py

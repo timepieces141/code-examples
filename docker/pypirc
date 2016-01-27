@@ -1,0 +1,7 @@
+[distutils]
+index-servers = epeters
+
+[epeters]
+repository: http://pypi-internal.epeters.com
+username: epeters
+password: foobar

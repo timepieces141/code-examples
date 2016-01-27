@@ -1,0 +1,35 @@
+# delete and recrete a directory to insure idempotency
+%w{delete create}.each do |action|
+  directory staging_dir do
+    recursive true
+    action action
+  end
+end
+
+# run bash in a block
+bash "do stuff" do
+  code <<-EOH
+    echo "do stuff"
+    EOH
+end
+
+# create some symlinks
+node[:list][:of][:binaries].each do |binary|
+  link File.join(node[:path][:to][:link_directory], binary) do
+    to File.join(installation_dir, "bin", binary)
+  end
+end
+
+# create upstart scripts for each of the configured binaries and start them
+upstart_dir = File.join("/", "etc", "init")
+node[:list][:of][:binaries].each do |binary|
+  template File.join(upstart_dir, "#{binary}.conf") do
+    source "#{binary}.conf.erb"
+    notifies :restart, "service[#{binary}]"
+  end
+  service binary do
+    provider Chef::Provider::Service::Upstart
+    action :enable
+  end
+end
+
