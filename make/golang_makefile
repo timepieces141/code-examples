@@ -1,0 +1,47 @@
+# Example Makefile for a golang application
+
+.PHONY: check-gopath check-artifactdir all clean dependencies compile test package
+
+GIT_REPO="github.com/timepieces141/nonexistent_golang_proj"
+EXECUTABLE_PACKAGE="awesome"
+PROJECT_NAME="Awesome"
+ARTIFACT_NAME="awesome.tgz"
+ARTIFACT_CONTENTS=bin/ README.md
+
+all: compile
+
+clean: check-gopath
+	@echo "Removing the pkg directory from $(GOPATH)"
+	@rm -rf $(GOPATH)/pkg
+	@echo "Removing the bin directory from $(GOPATH)"
+	@rm -rf $(GOPATH)/bin
+
+dependencies:
+	@echo "Getting dependencies"
+	@go get -d -v $(GIT_REPO)/...
+
+compile: dependencies clean
+	@echo "Compiling $(PROJECT_NAME)"
+	@go install $(GIT_REPO)/$(EXECUTABLE_PACKAGE)
+
+test: dependencies
+	@echo "Testing"
+	@go test $(GIT_REPO)/...
+
+package: check-artifactdir compile
+	@cp $(GOPATH)/src/$(GIT_REPO)/README.md $(GOPATH)
+	@echo "Creating tarball of $(PROJECT_NAME) at $(ARTIFACT_DIR)/$(ARTIFACT_NAME)"
+	@mkdir -p $(ARTIFACT_DIR)
+	@cd $(GOPATH); tar cvzf $(ARTIFACT_DIR)/$(ARTIFACT_NAME) $(ARTIFACT_CONTENTS)
+
+check-gopath:
+	@echo "Checking GOPATH"
+ifndef GOPATH
+	$(error GOPATH is undefined)
+endif
+
+check-artifactdir:
+	@echo "Checking ARTIFACT_DIR"
+ifndef ARTIFACT_DIR
+	$(error ARTIFACT_DIR is undefined)
+endif

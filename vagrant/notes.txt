@@ -1,0 +1,3 @@
+# inline shell provisioning based on a testing environment variable
+config.vm.provision :shell, inline: "cd #{install_dir}; make test" if ENV['VAGRANT_BUILD']
+config.vm.provision :shell, inline: "cd #{install_dir}; make package ARTIFACT_DIR=#{artifact_dir}" if ENV['VAGRANT_BUILD']
