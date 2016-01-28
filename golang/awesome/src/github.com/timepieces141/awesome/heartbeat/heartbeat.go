@@ -1,6 +1,11 @@
-package status
+package heartbeat
 
-func SetupHeartbeat(statusFunction func() bool, stopStatus *chan []byte) {
+import (
+    "log"
+    "time"
+)
+
+func SetupHeartbeat(statusFunction func() bool, stop *chan []byte) {
     var running bool = true
 
     // setup the timer
@@ -15,8 +20,10 @@ func SetupHeartbeat(statusFunction func() bool, stopStatus *chan []byte) {
     for ; running ; {
         select{
             // send a heartbeat (stdout and wait for this example)
-            case data, _ := <- timeout
-                log.Println("I'm still here!!")
+            case data, _ := <- timeout:
+                if data == true{
+                    log.Println("I'm still here!!")
+                }
 
             // listen for the stop
             case _, ok := <-*stop:

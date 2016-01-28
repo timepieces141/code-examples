@@ -23,7 +23,7 @@ func main() {
     statusFunction := func() bool {
         return status
     }
-    heartbeat.SetupHeartbeat(statusFunction, &stop)
+    go heartbeat.SetupHeartbeat(statusFunction, &stop)
 
     // more services could be established here, and if they have "alive" loops,
     // then they can also have access to "stop"
