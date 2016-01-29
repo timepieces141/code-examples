@@ -1,6 +1,8 @@
 package main
 
 import (
+    "flag"
+    "github.com/timepieces141/awesome/configuration"
     "github.com/timepieces141/awesome/heartbeat"
     "log"
     "os"
@@ -15,6 +17,12 @@ func main() {
     log.Println("--------------------------------")
     log.Println("Awesome! starting up...  ")
     log.Println("--------------------------------")
+
+    // check for a command line flag that tells us where the config file is,
+    // else assume the default location
+    var configFile string
+    flag.StringVar(&configFile, "config-file", configuration.DEFAULT_CONFIG_FILE, "Location of the configuration file");
+    flag.Parse()
 
     // channel for stopping loops inside services
     stop := make(chan []byte, 0)
