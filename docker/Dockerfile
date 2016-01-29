@@ -1,4 +1,4 @@
-# a sample images
+# A sample Dockerfile
 #
 # VERSION 0.1.7
 #
